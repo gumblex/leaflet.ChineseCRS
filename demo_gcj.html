@@ -115,7 +115,6 @@ for (i = 0; i < layers_attr.length; i++) {
         if (i == 0) layers_base[obj['name']].addTo(map);
     }
 }
-console.log(layers_base);
 L.control.layers(layers_base, layers_overlay).addTo(map);
 var marker = L.marker([31.23127122, 121.47005712], {
     title: '上海人民广场'}).addTo(map);
