@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Web Mercator with GCJ02 Demo</title>
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    font-size: 15px;
+    line-height: 1.25em;
+}
+#container {
+    height: 100%;
+    width: auto;
+}
+#mapwrap, #map {
+    height: 100%;
+    width: 100%;
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="./leaflet.ChineseCRS.js"></script>
+<script>
+'use strict';
+document.addEventListener('DOMContentLoaded', function() {
+var layers_attr = [
+    {
+        "url": "https://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}",
+        "subdomains": "1234",
+        "name": "高德",
+        "attribution": "高德软件 GS(2017)3426号"
+    },
+    {
+        "url": "https://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=6&x={x}&y={y}&z={z}",
+        "subdomains": "1234",
+        "name": "高德 卫星",
+        "attribution": "高德软件 GS(2017)3426号"
+    },
+    {
+        "url": "https://rt{s}.map.gtimg.com/tile?z={z}&x={x}&y={y}&styleid=0&version=256",
+        "subdomains": "0123",
+        "name": "腾讯地图",
+        "attribution": "Tencent - GS(2016)930号 - Data© NavInfo",
+        "type": "qq",
+        "tms": true
+    },
+    {
+        "url": "http://p{s}.map.gtimg.com/sateTiles/{z}/{x4}/{y4}/{x}_{y}.jpg",
+        "subdomains": "0123",
+        "name": "腾讯地图 卫星",
+        "attribution": "Tencent - GS(2017)2905 - Imagery© DigitalGlobe & Chinasiwei",
+        "type": "qq",
+        "tms": true
+    },
+    {
+        "url": "https://rt{s}.map.gtimg.com/tile?z={z}&x={x}&y={y}&styleid=4&version=256",
+        "subdomains": "0123",
+        "name": "腾讯地图 路网（暗色）",
+        "attribution": "Tencent - GS(2016)930号 - Data© NavInfo",
+        "type": "qq",
+        "tms": true
+    },
+    {
+        "url": "https://wprd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+        "subdomains": "1234",
+        "name": "高德 路网",
+        "attribution": "高德软件 GS(2017)3426号",
+        "overlay": true
+    },
+    {
+        "url": "https://rt{s}.map.gtimg.com/tile?z={z}&x={x}&y={y}&styleid=2&version=256",
+        "subdomains": "0123",
+        "name": "腾讯地图 路网（卫星）",
+        "attribution": "Tencent - GS(2016)930号 - Data© NavInfo",
+        "type": "qq",
+        "tms": true,
+        "overlay": true
+    },
+    {
+        "url": "https://rt{s}.map.gtimg.com/tile?z={z}&x={x}&y={y}&styleid=3&version=256",
+        "name": "腾讯地图 路网（地形）",
+        "subdomains": "0123",
+        "attribution": "Tencent - GS(2016)930号 - Data© NavInfo",
+        "type": "qq",
+        "tms": true,
+        "overlay": true
+    },
+];
+document.getElementById('map').innerHTML = "";
+var zoom = 16, lat = 31.23127122, lng = 121.47005712;
+var map = L.map('map', {
+    center: [lat, lng], zoom: zoom,
+    crs: L.ChineseCRS.CRS_GCJ02_3857
+});
+var layers_base = {}, layers_overlay = {};
+var i = 0;
+for (i = 0; i < layers_attr.length; i++) {
+    var obj = layers_attr[i];
+    var layer = L.ChineseCRS.getTileLayer(obj.type, obj.url, {
+        id: obj.id, attribution: obj.attribution,
+        maxZoom: 18, minZoom: 2, tms: !!obj.tms,
+        subdomains: obj.subdomains || ''
+    });
+    if (obj.overlay) {
+        layers_overlay[obj['name']] = layer;
+    } else {
+        layers_base[obj['name']] = layer;
+        if (i == 0) layers_base[obj['name']].addTo(map);
+    }
+}
+console.log(layers_base);
+L.control.layers(layers_base, layers_overlay).addTo(map);
+var marker = L.marker([31.23127122, 121.47005712], {
+    title: '上海人民广场'}).addTo(map);
+});
+</script>
+</head>
+<body>
+<div id="container">
+<section id="mapwrap" class="smooth">
+<div id="map">The map is not loaded.</div>
+</section>
+</div>
+</body>
+</html>

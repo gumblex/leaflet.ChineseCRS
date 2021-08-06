@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Baidu Map Demo</title>
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    font-size: 15px;
+    line-height: 1.25em;
+}
+#container {
+    height: 100%;
+    width: auto;
+}
+#mapwrap, #map {
+    height: 100%;
+    width: 100%;
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="./leaflet.ChineseCRS.js"></script>
+<script>
+'use strict';
+document.addEventListener('DOMContentLoaded', function() {
+var layers_attr = [
+    {
+        "url": "http://online{s}.map.bdimg.com/onlinelabel/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1&p=1",
+        "subdomains": "0123",
+        "name": "百度地图",
+        "attribution": "Baidu - GS(2016)2089号 - Data© 长地万方",
+        "type": "baidu"
+    },
+    {
+        "url": "http://shangetu{s}.map.bdimg.com/it/u=x={x};y={y};z={z};v=009;type=sate&fm=46",
+        "subdomains": "0123",
+        "name": "百度地图 卫星",
+        "attribution": "Baidu - GS(2016)2089号 - Data© 长地万方",
+        "type": "baidu"
+    },
+    {
+        "url": "http://online{s}.map.bdimg.com/tile/?qt=tile&x={x}&y={y}&z={z}&styles=sl&v=020",
+        "name": "百度地图 路网（卫星）",
+        "subdomains": "0123",
+        "attribution": "Baidu - GS(2016)2089号 - Data© 长地万方",
+        "type": "baidu",
+        "overlay": true
+    }
+];
+document.getElementById('map').innerHTML = "";
+var zoom = 16, lat = 31.23127122, lng = 121.47005712;
+var map = L.map('map', {
+    center: [lat, lng], zoom: zoom,
+    crs: L.ChineseCRS.CRS_BaiduMercator
+});
+var layers_base = {}, layers_overlay = {};
+var i = 0;
+for (i = 0; i < layers_attr.length; i++) {
+    var obj = layers_attr[i];
+    var layer = L.ChineseCRS.getTileLayer(obj.type, obj.url, {
+        id: obj.id, attribution: obj.attribution,
+        maxZoom: 18, minZoom: 2,
+        subdomains: obj.subdomains || ''
+    });
+    if (obj.overlay) {
+        layers_overlay[obj['name']] = layer;
+    } else {
+        layers_base[obj['name']] = layer;
+        if (i == 0) layers_base[obj['name']].addTo(map);
+    }
+}
+console.log(layers_base);
+L.control.layers(layers_base, layers_overlay).addTo(map);
+var marker = L.marker([31.23127122, 121.47005712], {
+    title: '上海人民广场'}).addTo(map);
+});
+</script>
+</head>
+<body>
+<div id="container">
+<section id="mapwrap" class="smooth">
+<div id="map">The map is not loaded.</div>
+</section>
+</div>
+</body>
+</html>
