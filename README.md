@@ -1,5 +1,5 @@
 # leaflet.ChineseCRS
-Leaflet plugin for using Chinese tile providers without offset.
+[Leaflet](https://leafletjs.com/) plugin for using Chinese tile providers without offset.
 
 This plugin uses the CRS appoach: Set the `crs` option of the `map` object, and
 your features with WGS84 coordinates (EPSG:4326) will be directly usable.
@@ -45,4 +45,4 @@ PROJ string:
 ## Acknowledgement
 This work is based on [PRCoords](https://github.com/Artoria2e5/PRCoords) (GCJ02 and BD09 algorithms) and [PROJ](https://github.com/OSGeo/PROJ) (Mercator algorithms).
 
-See also: [Leaflet.ChineseTmsProviders](https://github.com/htoooth/Leaflet.ChineseTmsProviders), [leaflet-tileLayer-baidugaode](https://github.com/muyao1987/leaflet-tileLayer-baidugaode) (for provider urls), [cntms](https://github.com/gumblex/cntms) (tile image reverse proxy).
+See also: [Leaflet.ChineseTmsProviders](https://github.com/htoooth/Leaflet.ChineseTmsProviders), [leaflet-tileLayer-baidugaode](https://github.com/muyao1987/leaflet-tileLayer-baidugaode) (for provider urls), [cntms](https://github.com/gumblex/cntms) (tile image reverse proxy, for GIS software).
