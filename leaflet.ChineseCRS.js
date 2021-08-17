@@ -41,26 +41,29 @@ function wgs_gcj(wgs) {
     //
     // For example, at the (mapped) center of China (105E, 35N), you get a
     // default deviation of <300, -100> meters.
+    var x_pi = x * Math.PI, y_pi = y * Math.PI, sq_x = Math.sqrt(Math.abs(x));
+
     var dLat_m = -100 + 2 * x + 3 * y + 0.2 * y * y + 0.1 * x * y +
-        0.2 * Math.sqrt(Math.abs(x)) + (
-            2 * Math.sin(x * 6 * Math.PI) + 2 * Math.sin(x * 2 * Math.PI) +
-            2 * Math.sin(y * Math.PI) + 4 * Math.sin(y / 3 * Math.PI) +
-            16 * Math.sin(y / 12 * Math.PI) + 32 * Math.sin(y / 30 * Math.PI)
+        0.2 * sq_x + (
+            2 * Math.sin(x_pi * 6) + 2 * Math.sin(x_pi * 2) +
+            2 * Math.sin(y_pi) + 4 * Math.sin(y_pi / 3) +
+            16 * Math.sin(y_pi / 12) + 32 * Math.sin(y_pi / 30)
         ) * 20 / 3;
     var dLon_m = 300 + x + 2 * y + 0.1 * x * x + 0.1 * x * y +
-        0.1 * Math.sqrt(Math.abs(x)) + (
-            2 * Math.sin(x * 6 * Math.PI) + 2 * Math.sin(x * 2 * Math.PI) +
-            2 * Math.sin(x * Math.PI) + 4 * Math.sin(x / 3 * Math.PI) +
-            15 * Math.sin(x / 12 * Math.PI) + 30 * Math.sin(x / 30 * Math.PI)
+        0.1 * sq_x + (
+            2 * Math.sin(x_pi * 6) + 2 * Math.sin(x_pi * 2) +
+            2 * Math.sin(x_pi) + 4 * Math.sin(x_pi / 3) +
+            15 * Math.sin(x_pi / 12) + 30 * Math.sin(x_pi / 30)
         ) * 20 / 3;
 
-    var radLat = wgs.lat / 180 * Math.PI;
+    var radians = Math.PI / 180;
+    var radLat = wgs.lat * radians;
     var magic = 1 - GCJ_EE * Math.pow(Math.sin(radLat), 2); // just a common expr
 
     // [[:en:Latitude#Length_of_a_degree_of_latitude]]
-    var lat_deg_arclen = (Math.PI / 180) * (GCJ_A * (1 - GCJ_EE)) / Math.pow(magic, 1.5);
+    var lat_deg_arclen = radians * (GCJ_A * (1 - GCJ_EE)) / Math.pow(magic, 1.5);
     // [[:en:Longitude#Length_of_a_degree_of_longitude]]
-    var lon_deg_arclen = (Math.PI / 180) * (GCJ_A * Math.cos(radLat) / Math.sqrt(magic));
+    var lon_deg_arclen = radians * (GCJ_A * Math.cos(radLat) / Math.sqrt(magic));
 
     // The screwers pack their deviations into degrees and disappear.
     // Note how they are mixing WGS-84 and Krasovsky 1940 ellipsoids here...
@@ -165,14 +168,25 @@ function pj_sinhpsi2tanphi(taup, e) {
 
 
 var SphericalMercator_GCJ02 = {
+    R: 6378137,
     bounds: L.Projection.SphericalMercator.bounds,
+
     project: function(latlng) {
+        var MAX_LATITUDE = 85.05112877980659238;
+        var radians = Math.PI / 180;
         var p_gcj = wgs_gcj(latlng);
-        return L.Projection.SphericalMercator.project(p_gcj);
+        var lat = Math.max(Math.min(MAX_LATITUDE, p_gcj.lat), -MAX_LATITUDE);
+        return new L.Point(
+			p_gcj.lng * radians * this.R,
+			Math.asinh(Math.tan(lat * radians)) * this.R
+        );
     },
     unproject: function(point) {
-        var p_gcj = L.Projection.SphericalMercator.unproject(point);
-        return gcj_wgs_exact(p_gcj);
+        var degrees = 180 / Math.PI;
+        return gcj_wgs_exact({
+            lat: degrees * Math.atan(Math.sinh(point.y/this.R)),
+            lng: degrees * point.x / this.R
+        });
     }
 };
 
