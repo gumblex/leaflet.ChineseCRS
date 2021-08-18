@@ -8,10 +8,10 @@ your features with WGS84 coordinates (EPSG:4326) will be directly usable.
 
 Add `leaflet.ChineseCRS.js` to your html/js project.
 
-* `L.ChineseCRS.wgs_gcj(L.LatLng)`: Convert coordinates from WGS84 (EPSG:4326) to GCJ02.
-* `L.ChineseCRS.wgs_bd(L.LatLng)`: Convert coordinates from WGS84 (EPSG:4326) to BD09.
-* `L.ChineseCRS.gcj_wgs(L.LatLng)`: Convert coordinates from GCJ02 to WGS84 (EPSG:4326).
-* `L.ChineseCRS.bd_wgs(L.LatLng)`: Convert coordinates from BD09 to WGS84 (EPSG:4326).
+* `L.ChineseCRS.wgs_gcj({lat, lng})`: Convert coordinates from WGS84 (EPSG:4326) to GCJ02.
+* `L.ChineseCRS.wgs_bd({lat, lng})`: Convert coordinates from WGS84 (EPSG:4326) to BD09.
+* `L.ChineseCRS.gcj_wgs({lat, lng})`: Convert coordinates from GCJ02 to WGS84 (EPSG:4326).
+* `L.ChineseCRS.bd_wgs({lat, lng})`: Convert coordinates from BD09 to WGS84 (EPSG:4326).
 * `L.ChineseCRS.Proj_GCJ02_3857`: `L.Projection` object for Pseudo-Mercator (EPSG:3857) with GCJ02 coordinates.
 * `L.ChineseCRS.Proj_BaiduMercator`: `L.Projection` object for Baidu Mercator with BD09 coordinates.
 * `L.ChineseCRS.CRS_GCJ02_3857`: `L.CRS` object for Pseudo-Mercator (EPSG:3857) with GCJ02 coordinates.

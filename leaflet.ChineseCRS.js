@@ -17,7 +17,7 @@
 'use strict';
 
 function _coord_diff(a, b) {
-    return new L.LatLng(a.lat - b.lat, a.lng - b.lng);
+    return {lat: a.lat - b.lat, lng: a.lng - b.lng};
 }
 
 function wgs_gcj(wgs) {
@@ -67,10 +67,10 @@ function wgs_gcj(wgs) {
 
     // The screwers pack their deviations into degrees and disappear.
     // Note how they are mixing WGS-84 and Krasovsky 1940 ellipsoids here...
-    return new L.LatLng(
-        wgs.lat + (dLat_m / lat_deg_arclen),
-        wgs.lng + (dLon_m / lon_deg_arclen),
-    )
+    return {
+        lat: wgs.lat + (dLat_m / lat_deg_arclen),
+        lng: wgs.lng + (dLon_m / lon_deg_arclen),
+    }
 }
 
 function gcj_bd(gcj) {
@@ -82,7 +82,7 @@ function gcj_bd(gcj) {
     var θ = Math.atan2(y, x) + 0.000003 * Math.cos(x * Math.PI * 3000 / 180);
     
     // Hard-coded default deviations again!
-    return new L.LatLng(r * Math.sin(θ) + 0.0060, r * Math.cos(θ) + 0.0065);
+    return {lat: r * Math.sin(θ) + 0.0060, lng: r * Math.cos(θ) + 0.0065};
 }
 
 // Yes, we can implement a "precise" one too.
@@ -95,7 +95,7 @@ function bd_gcj(bd) {
     var r = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * Math.PI * 3000 / 180);
     var θ = Math.atan2(y, x) - 0.000003 * Math.cos(x * Math.PI * 3000 / 180);
     
-    return new L.LatLng(r * Math.sin(θ), r * Math.cos(θ));
+    return {lat: r * Math.sin(θ), lng: r * Math.cos(θ)};
 }
 
 function gcj_wgs(gcj) {
@@ -183,10 +183,11 @@ var SphericalMercator_GCJ02 = {
     },
     unproject: function(point) {
         var degrees = 180 / Math.PI;
-        return gcj_wgs_exact({
+        var result = gcj_wgs_exact({
             lat: degrees * Math.atan(Math.sinh(point.y/this.R)),
             lng: degrees * point.x / this.R
-        });
+        })
+        return new L.LatLng(result.lat, result.lng);
     }
 };
 
@@ -217,11 +218,12 @@ var BaiduMercator_BD09 = {
         return new L.Point(x, y);
     },
     unproject: function(point) {
-        return bd_wgs_exact({
+        var result = bd_wgs_exact({
             lng: point.x / Math.PI*180 / this.A,
             lat: Math.atan(pj_sinhpsi2tanphi(
                 Math.sinh(point.y / this.A), this.E)) / Math.PI*180
-        });
+        })
+        return new L.LatLng(result.lat, result.lng);
     }
 };
 
